@@ -7,7 +7,7 @@ class TorOauth2FetchUserDetailsValidator
 
   def valid_value?(val)
     return true if val == "t"
-    SitSetting.torauth2_callback_user_id_path.length > 0
+    SiteSetting.torauth2_callback_user_id_path.length > 0
   end
 
   def error_message

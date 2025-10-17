@@ -10,13 +10,13 @@ class ::OmniAuth::Strategies::Oauth2Tormach < ::OmniAuth::Strategies::OAuth2
   option :name, "oauth2_tormach"
 
   uid do
-    if path = SitSetting.torauth2_callback_user_id_path.split(".")
+    if path = SiteSetting.torauth2_callback_user_id_path.split(".")
       recurse(access_token, [*path]) if path.present?
     end
   end
 
   info do
-    if paths = SitSetting.torauth2_callback_user_info_paths.split("|")
+    if paths = SiteSetting.torauth2_callback_user_info_paths.split("|")
       result = Hash.new
       paths.each do |p|
         segments = p.split(":")
@@ -76,7 +76,7 @@ end
 DiscoursePluginRegistry.define_filtered_register :oauth2_tormach_additional_json_paths
 
 # After authentication, we'll use this to confirm that the registered json paths are fulfilled, or display an error.
-# This requires SitSetting.torauth2_fetch_user_details? to be true, and can be used with
+# This requires SiteSetting.torauth2_fetch_user_details? to be true, and can be used with
 # DiscoursePluginRegistry.oauth2_tormach_additional_json_paths.
 #
 # Example usage:
@@ -93,11 +93,11 @@ class ::TorOAuth2BasicAuthenticator < Auth::ManagedAuthenticator
   end
 
   def can_revoke?
-    SitSetting.torauth2_allow_association_change
+    SiteSetting.torauth2_allow_association_change
   end
 
   def can_connect_existing_user?
-    SitSetting.torauth2_allow_association_change
+    SiteSetting.torauth2_allow_association_change
   end
 
   def register_middleware(omniauth)
@@ -106,28 +106,28 @@ class ::TorOAuth2BasicAuthenticator < Auth::ManagedAuthenticator
                       setup:
                         lambda { |env|
                           opts = env["omniauth.strategy"].options
-                          opts[:client_id] = SitSetting.torauth2_client_id
-                          opts[:client_secret] = SitSetting.torauth2_client_secret
-                          opts[:provider_ignores_state] = SitSetting.torauth2_disable_csrf
+                          opts[:client_id] = SiteSetting.torauth2_client_id
+                          opts[:client_secret] = SiteSetting.torauth2_client_secret
+                          opts[:provider_ignores_state] = SiteSetting.torauth2_disable_csrf
                           opts[:client_options] = {
-                            authorize_url: SitSetting.torauth2_authorize_url,
-                            token_url: SitSetting.torauth2_token_url,
-                            token_method: SitSetting.torauth2_token_url_method.downcase.to_sym,
+                            authorize_url: SiteSetting.torauth2_authorize_url,
+                            token_url: SiteSetting.torauth2_token_url,
+                            token_method: SiteSetting.torauth2_token_url_method.downcase.to_sym,
                           }
                           opts[:authorize_options] = SiteSetting
                             .oauth2_authorize_options
                             .split("|")
                             .map(&:to_sym)
 
-                          if SitSetting.torauth2_authorize_signup_url.present? &&
+                          if SiteSetting.torauth2_authorize_signup_url.present? &&
                                ActionDispatch::Request.new(env).params["signup"].present?
                             opts[:client_options][
                               :authorize_url
-                            ] = SitSetting.torauth2_authorize_signup_url
+                            ] = SiteSetting.torauth2_authorize_signup_url
                           end
 
-                          if SitSetting.torauth2_send_auth_header? &&
-                               SitSetting.torauth2_send_auth_body?
+                          if SiteSetting.torauth2_send_auth_header? &&
+                               SiteSetting.torauth2_send_auth_body?
                             # For maximum compatibility we include both header and body auth by default
                             # This is a little unusual, and utilising multiple authentication methods
                             # is technically disallowed by the spec (RFC2749 Section 5.2)
@@ -137,18 +137,18 @@ class ::TorOAuth2BasicAuthenticator < Auth::ManagedAuthenticator
                                 "Authorization" => basic_auth_header,
                               },
                             }
-                          elsif SitSetting.torauth2_send_auth_header?
+                          elsif SiteSetting.torauth2_send_auth_header?
                             opts[:client_options][:auth_scheme] = :basic_auth
                           else
                             opts[:client_options][:auth_scheme] = :request_body
                           end
 
-                          unless SitSetting.torauth2_scope.blank?
-                            opts[:scope] = SitSetting.torauth2_scope
+                          unless SiteSetting.torauth2_scope.blank?
+                            opts[:scope] = SiteSetting.torauth2_scope
                           end
 
                           opts[:client_options][:connection_build] = lambda do |builder|
-                            if SitSetting.torauth2_debug_auth && defined?(OAuth2FaradayFormatter)
+                            if SiteSetting.torauth2_debug_auth && defined?(OAuth2FaradayFormatter)
                               builder.response :logger,
                                                Rails.logger,
                                                { bodies: true, formatter: OAuth2FaradayFormatter }
@@ -162,7 +162,7 @@ class ::TorOAuth2BasicAuthenticator < Auth::ManagedAuthenticator
 
   def basic_auth_header
     "Basic " +
-      Base64.strict_encode64("#{SitSetting.torauth2_client_id}:#{SitSetting.torauth2_client_secret}")
+      Base64.strict_encode64("#{SiteSetting.torauth2_client_id}:#{SiteSetting.torauth2_client_secret}")
   end
 
   def walk_path(fragment, segments, seg_index = 0)
@@ -229,12 +229,12 @@ class ::TorOAuth2BasicAuthenticator < Auth::ManagedAuthenticator
   end
 
   def log(info)
-    Rails.logger.warn("Tormach OAuth2 Debugging: #{info}") if SitSetting.torauth2_debug_auth
+    Rails.logger.warn("Tormach OAuth2 Debugging: #{info}") if SiteSetting.torauth2_debug_auth
   end
 
   def fetch_user_details(token, id)
-    user_json_url = SitSetting.torauth2_user_json_url.sub(":token", token.to_s).sub(":id", id.to_s)
-    user_json_method = SitSetting.torauth2_user_json_url_method.downcase.to_sym
+    user_json_url = SiteSetting.torauth2_user_json_url.sub(":token", token.to_s).sub(":id", id.to_s)
+    user_json_method = SiteSetting.torauth2_user_json_url_method.downcase.to_sym
 
     bearer_token = "Bearer #{token}"
     connection = Faraday.new { |f| f.adapter FinalDestination::FaradayAdapter }
@@ -278,7 +278,7 @@ class ::TorOAuth2BasicAuthenticator < Auth::ManagedAuthenticator
   end
 
   def primary_email_verified?(auth)
-    return true if SitSetting.torauth2_email_verified
+    return true if SiteSetting.torauth2_email_verified
     verified = auth["info"]["email_verified"]
     verified = true if verified == "true"
     verified = false if verified == "false"
@@ -286,7 +286,7 @@ class ::TorOAuth2BasicAuthenticator < Auth::ManagedAuthenticator
   end
 
   def always_update_user_email?
-    SitSetting.torauth2_overrides_email
+    SiteSetting.torauth2_overrides_email
   end
 
   def after_authenticate(auth, existing_account: nil)
@@ -305,7 +305,7 @@ class ::TorOAuth2BasicAuthenticator < Auth::ManagedAuthenticator
       #{auth["extra"].to_hash.to_yaml}
     LOG
 
-    if SitSetting.torauth2_fetch_user_details? && SitSetting.torauth2_user_json_url.present?
+    if SiteSetting.torauth2_fetch_user_details? && SiteSetting.torauth2_user_json_url.present?
       if fetched_user_details = fetch_user_details(auth["credentials"]["token"], auth["uid"])
         auth["uid"] = fetched_user_details[:user_id] if fetched_user_details[:user_id]
         auth["info"]["nickname"] = fetched_user_details[:username] if fetched_user_details[
@@ -351,7 +351,7 @@ class ::TorOAuth2BasicAuthenticator < Auth::ManagedAuthenticator
   end
 
   def enabled?
-    SitSetting.torauth2_enabled
+    SiteSetting.torauth2_enabled
   end
 end
 
