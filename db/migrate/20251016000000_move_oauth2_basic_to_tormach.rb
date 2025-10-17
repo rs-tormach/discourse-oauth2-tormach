@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class MoveOAuth2BasicToTormach < ActiveRecord::Migration[5.2]
+class MoveOauth2BasicToTormach < ActiveRecord::Migration[5.2]
   def up
     execute <<~SQL
     UPDATE user_associated_accounts
