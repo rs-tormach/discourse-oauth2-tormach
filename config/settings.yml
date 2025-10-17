@@ -2,7 +2,7 @@ login:
   torauth2_enabled:
     default: true
     client: true
-  torauth2_client_id: "rsteckmanlocalhost"
+  torauth2_client_id: "devtestforums"
   torauth2_client_secret: "UkuTGZHuBdhxAficnOr+8cBP5wIltuArExPbr/UaVIIawvxK7Wf4yrQv0MB4oM1xjCTTWELI1X4RgCfl1DH+qg=="
   torauth2_authorize_url: "https://tormach.com/oauth2/account/auth"
   torauth2_authorize_signup_url: ""
@@ -21,7 +21,7 @@ login:
   torauth2_fetch_user_details:
     default: true
     validator: "TorOauth2FetchUserDetailsValidator"
-  torauth2_user_json_url: ""
+  torauth2_user_json_url: "https://tormach.com/oauth2/account/details"
   torauth2_user_json_url_method:
     default: "GET"
     type: enum
