@@ -1,0 +1,53 @@
+login:
+  torauth2_enabled:
+    default: true
+    client: true
+  torauth2_client_id: "devtestforums"
+  torauth2_client_secret: "UkuTGZHuBdhxAficnOr+8cBP5wIltuArExPbr/UaVIIawvxK7Wf4yrQv0MB4oM1xjCTTWELI1X4RgCfl1DH+qg=="
+  torauth2_authorize_url: "https://tormach.com/oauth2/account/auth"
+  torauth2_authorize_signup_url: ""
+  torauth2_token_url: "https://tormach.com/oauth2/account/token"
+  torauth2_token_url_method:
+    default: "POST"
+    type: enum
+    choices:
+      - GET
+      - POST
+      - PUT
+  torauth2_callback_user_id_path: ""
+  torauth2_callback_user_info_paths:
+    type: list
+    default: ""
+  torauth2_fetch_user_details:
+    default: true
+    validator: "TorOauth2FetchUserDetailsValidator"
+  torauth2_user_json_url: "https://tormach.com/oauth2/account/details"
+  torauth2_user_json_url_method:
+    default: "GET"
+    type: enum
+    choices:
+      - GET
+      - POST
+  torauth2_json_user_id_path: "customer.id"
+  torauth2_json_username_path: ""
+  torauth2_json_name_path: "customer.full_name"
+  torauth2_json_email_path: "customer.email"
+  torauth2_json_email_verified_path: "customer.email_verified"
+  torauth2_json_avatar_path: ""
+  torauth2_email_verified: false
+  torauth2_overrides_email: true
+  torauth2_send_auth_header: true
+  torauth2_send_auth_body: true
+  torauth2_debug_auth: false
+  torauth2_authorize_options:
+    default: "scope"
+    type: list
+  torauth2_scope: ""
+  torauth2_button_title:
+    default: "with Tormach.com"
+    client: true
+  torauth2_allow_association_change:
+    default: false
+  torauth2_disable_csrf:
+    default: false
+    hidden: true
